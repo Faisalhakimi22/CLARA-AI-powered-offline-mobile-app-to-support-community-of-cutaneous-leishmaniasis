@@ -1,6 +1,6 @@
 # CLARA engineering verification - 14 October 2026
 
-Current app: 1.1.0 / Android version code 2. Current workflow: patient details, lesion photo, image-model result, save. Microscopy comparison is a separate later study task. These are engineering checks, not clinical validation.
+Current app: 1.1.1 / Android version code 3. Current workflow: patient details, lesion photo, image-model result, save. Microscopy comparison is a separate later study task. These are engineering checks, not clinical validation.
 
 | Check | Result |
 | --- | --- |
@@ -21,9 +21,17 @@ Five distinct browser scenarios passed in Chromium with a Pixel 7 viewport. Four
 
 The 18 unit checks include model sequencing, malformed outputs, mask geometry, class mapping, completion requirements, paired-metric denominators, missing/inconclusive exclusions, zero denominators, original-result immutability, photo invalidation, migrations, CSV quoting/formula protection, and laboratory dates around local midnight. Screenshots are in `artifacts/feasibility/`.
 
+## Android 1.1.1 runtime registration fix
+
+Build completed in 10m 4s. Version 1.1.1/code 3, 118338406 bytes, SHA-256 `96558340c26fdea171bd7ca2384ea26d23058c6c0de3e1d14052cacdb6b9aa6a`. The original signing certificate is retained. Signature, ZIP alignment, both model hashes, all 23 ARM64 library layout checks, and ONNX registration in the packaged DEX passed. The registration guard rejects the published 1.1.0 APK and accepts 1.1.1. All 18 unit tests and TypeScript checks passed again.
+
+The installed 1.1.0 build was reported to show Analysis unavailable. Inspection of its packaged DEX confirmed that `PackageList` never instantiated `OnnxruntimePackage`, even though the APK contained the ONNX native libraries and models. ORT's legacy Expo unimodule metadata caused Expo autolinking to omit the React Native package.
+
+The root `react-native.config.js` explicitly configures that Android dependency. The generated package list now includes it. The build script rejects an APK if either the generated list or packaged DEX lacks registration. Model weights, image preprocessing, thresholds and study record storage are unchanged. The five browser scenarios above are historical 1.1.0 checks; physical Android inference still requires a connected phone.
+
 ## Build and model provenance
 
-The current [Android APK](artifacts/android/CLARA-research-arm64-v8a.apk) is 118,338,406 bytes. SHA256: `affab00c416832730e2c4bb2b7651101fddf8577ed76d5c87d790be7faeca74a`. Package `org.research.cltriage`, version 1.1.0/code 2, ARM64, minimum Android API 24. The build completed in 10m 36s and retained the same research signing certificate for updates. [Static package evidence](artifacts/android/apk-verification.json) verifies both unchanged ONNX models and all 23 ARM64 libraries. Signature and ZIP-alignment checks also passed in the build script. `adb devices -l` showed no connected device on 14 October.
+The historical 1.1.0 Android APK was 118,338,406 bytes. SHA256: `affab00c416832730e2c4bb2b7651101fddf8577ed76d5c87d790be7faeca74a`. That package was `org.research.cltriage`, version 1.1.0/code 2, ARM64, minimum Android API 24. The build completed in 10m 36s and retained the same research signing certificate for updates. [Static package evidence](artifacts/android/apk-verification.json) verifies both unchanged ONNX models and all 23 ARM64 libraries. Signature and ZIP-alignment checks also passed in the build script. `adb devices -l` showed no connected device on 14 October.
 
 The previous 1.0.0 APK and verification JSON are retained in `artifacts/android/previous-workflow-v1/`. Its SHA256 is `f91bb8a5941ed8a63394ae8ca2fabe05ce6f3f8bbb6dfc77eaac61cdcc73a85b`; it contains the earlier referral workflow and is not the current study app.
 

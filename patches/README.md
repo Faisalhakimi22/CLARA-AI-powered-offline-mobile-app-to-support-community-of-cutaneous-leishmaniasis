@@ -25,3 +25,7 @@ Upstream references:
 Reassess this patch when upgrading ONNX Runtime. After updating dependencies,
 verify the Android native build, offline inference, runtime teardown, and APK
 alignment. A successful web build does not validate the Android JSI bindings.
+
+## Android package registration
+
+ORT 1.24.3 also ships legacy Expo `unimodule.json` metadata. Expo autolinking skips its React Native package unless it has an explicit Android configuration. The root `react-native.config.js` supplies that configuration so `OnnxruntimePackage` is included in the generated `PackageList`. The local Android build script checks the generated package list and confirms that the packaged DEX instantiates `OnnxruntimePackage`. Native libraries alone do not prove that the JavaScript bridge is registered.

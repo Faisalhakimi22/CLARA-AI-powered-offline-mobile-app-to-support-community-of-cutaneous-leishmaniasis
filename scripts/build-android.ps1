@@ -29,6 +29,11 @@ try {
     if ($BuildDetails) { $gradleOptions += '--info' }
     & .\gradlew.bat @gradleOptions
     if ($LASTEXITCODE -ne 0) { throw 'Android build failed. See the Gradle error above.' }
+    $packageList = Join-Path $projectRoot 'android/app/build/generated/autolinking/src/main/java/com/facebook/react/PackageList.java'
+    if (-not (Test-Path -LiteralPath $packageList) -or
+        (Get-Content -LiteralPath $packageList -Raw) -notmatch 'new\s+(ai\.onnxruntime\.reactnative\.)?OnnxruntimePackage\s*\(') {
+        throw 'ONNX Runtime is not registered in the Android package list. Check react-native.config.js and regenerate autolinking before distributing the APK.'
+    }
     $artifactDir = Join-Path $projectRoot 'artifacts/android'
     New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
     $apk = Join-Path $artifactDir "CLARA-research-$Architecture.apk"
@@ -36,6 +41,11 @@ try {
     Write-Output "Signed research APK: $apk"
     & "$env:ANDROID_HOME/build-tools/36.0.0/apksigner.bat" verify --print-certs $apk
     if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed.' }
+    $registration = @(& "$env:ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer.bat" dex code --class com.facebook.react.PackageList $apk)
+    if ($LASTEXITCODE -ne 0 -or ($registration -join "`n") -notmatch 'new-instance[^\r\n]+Lai/onnxruntime/reactnative/OnnxruntimePackage;') {
+        throw 'The packaged APK does not register ONNX Runtime. Do not distribute this build.'
+    }
+    $registration | Set-Content -LiteralPath (Join-Path $artifactDir 'apk-runtime-registration.txt') -Encoding utf8
     & "$env:ANDROID_HOME/build-tools/36.0.0/zipalign.exe" -c -P 16 4 $apk
     if ($LASTEXITCODE -ne 0) { throw 'APK alignment verification failed.' }
     if ($Architecture -eq 'arm64-v8a') {
