@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['cutaneous leishmaniasis', 'scabies']
+
+roboflow:
+  workspace: computer-vision-project-01
+  project: cl-9n57k-bjyks
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/computer-vision-project-01/cl-9n57k-bjyks/dataset/3

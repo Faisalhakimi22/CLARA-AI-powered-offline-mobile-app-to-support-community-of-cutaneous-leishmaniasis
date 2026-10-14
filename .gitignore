@@ -1,0 +1,74 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+.tooling/
+android/local.properties
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# Local verification artifacts
+test-results/
+test-report/
+*.log
+
+# Local datasets, training environments, and generated checkpoints
+/data/
+/training/.venv/
+/training/prepared/
+/training/models/
+/training/candidates/
+/training/*.zip
+/training/reports/**/*.png
+/training/reports/**/*.jpg
+__pycache__/
+*.pyc
+
+# Generated runtime and downloadable release artifacts
+/public/onnx/
+/artifacts/
+*.apk
+*.aab
+
+# Secrets and local working documents
+.env
+.env.*
+*.keystore
+*.docx
+/article_river_*.png
+/cl-vcl-*-logic-agent-prompt.md

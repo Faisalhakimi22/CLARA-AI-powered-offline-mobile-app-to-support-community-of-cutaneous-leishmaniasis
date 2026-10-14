@@ -1,0 +1,17 @@
+// Internal research APK signing. Credentials live only in the local .tooling directory.
+allprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin('com.android.application')) {
+            def storePath = System.getenv('CLARA_RELEASE_STORE_FILE')
+            def password = System.getenv('CLARA_RELEASE_STORE_PASSWORD')
+            if (!storePath || !password) throw new GradleException('CLARA local signing credentials are not configured.')
+            def android = project.extensions.getByName('android')
+            def signing = android.signingConfigs.maybeCreate('claraResearch')
+            signing.storeFile = new File(storePath)
+            signing.storePassword = password
+            signing.keyAlias = 'clara-research'
+            signing.keyPassword = password
+            android.buildTypes.getByName('release').signingConfig = signing
+        }
+    }
+}

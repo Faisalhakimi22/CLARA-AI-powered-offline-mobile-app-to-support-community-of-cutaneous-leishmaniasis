@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "CLARA",
+    "slug": "cl-triage",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "cltriage",
+    "platforms": ["android", "ios", "web"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.research.cltriage"
+    },
+    "android": {
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "backgroundColor": "#B42332",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "package": "org.research.cltriage",
+      "allowBackup": false,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "CLARA",
+      "description": "Offline cutaneous leishmaniasis feasibility study",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-asset",
+      "onnxruntime-react-native",
+      [
+        "expo-splash-screen",
+        { "backgroundColor": "#FFFFFF", "image": "./assets/splash-icon.png", "imageWidth": 100 }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "CLARA uses the camera to photograph a lesion with appropriate patient consent.",
+          "recordAudioAndroid": false,
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose a lesion photograph for your local CLARA assessment.",
+          "cameraPermission": "CLARA uses the camera to photograph a lesion with appropriate patient consent.",
+          "microphonePermission": false
+        }
+      ]
+    ]
+  }
+}

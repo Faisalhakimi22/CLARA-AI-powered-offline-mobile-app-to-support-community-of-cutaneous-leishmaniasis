@@ -1,0 +1,89 @@
+diff --git a/node_modules/onnxruntime-react-native/android/build.gradle b/node_modules/onnxruntime-react-native/android/build.gradle
+--- a/node_modules/onnxruntime-react-native/android/build.gradle
++++ b/node_modules/onnxruntime-react-native/android/build.gradle
+@@ -85,13 +85,15 @@
+         if (REACT_NATIVE_MINOR_VERSION >= 71) {
+           // fabricjni required c++_shared
+           arguments "-DANDROID_STL=c++_shared",
++            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+             "-DNODE_MODULES_DIR=${nodeModules}",
+             "-DORT_EXTENSIONS_ENABLED=${ortExtensionsEnabled}",
+             "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
+             "-DUSE_QNN=${useQnn}",
+             "-DUSE_NNAPI=${!useQnn}"
+         } else {
+-          arguments "-DNODE_MODULES_DIR=${nodeModules}",
++          arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
++            "-DNODE_MODULES_DIR=${nodeModules}",
+             "-DORT_EXTENSIONS_ENABLED=${ortExtensionsEnabled}",
+             "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
+             "-DUSE_QNN=${useQnn}",
+@@ -242,12 +244,12 @@
+   implementation "junit:junit:4.12"
+ 
+   if (useQnn) {
+-    extractLibs "com.microsoft.onnxruntime:onnxruntime-android-qnn:latest.integration@aar"
+-  } else {
+-    extractLibs "com.microsoft.onnxruntime:onnxruntime-android:latest.integration@aar"
+-  }
+-
+-  if (VersionNumber.parse(REACT_NATIVE_VERSION) < VersionNumber.parse("0.71")) {
++    extractLibs "com.microsoft.onnxruntime:onnxruntime-android-qnn:1.24.3@aar"
++  } else {
++    extractLibs "com.microsoft.onnxruntime:onnxruntime-android:1.24.3@aar"
++  }
++
++  if (REACT_NATIVE_MINOR_VERSION < 71) {
+     extractLibs "com.facebook.fbjni:fbjni:+:headers"
+     extractLibs "com.facebook.fbjni:fbjni:+"
+   }
+diff --git a/node_modules/onnxruntime-react-native/android/src/main/java/ai/onnxruntime/reactnative/OnnxruntimeModule.java b/node_modules/onnxruntime-react-native/android/src/main/java/ai/onnxruntime/reactnative/OnnxruntimeModule.java
+--- a/node_modules/onnxruntime-react-native/android/src/main/java/ai/onnxruntime/reactnative/OnnxruntimeModule.java
++++ b/node_modules/onnxruntime-react-native/android/src/main/java/ai/onnxruntime/reactnative/OnnxruntimeModule.java
+@@ -6,6 +6,7 @@
+ import java.util.Map;
+ import java.util.HashMap;
+ import android.os.Build;
++import android.util.Log;
+ import androidx.annotation.NonNull;
+ import androidx.annotation.RequiresApi;
+ import com.facebook.react.bridge.JavaScriptContextHolder;
+@@ -17,6 +18,7 @@
+ @RequiresApi(api = Build.VERSION_CODES.N)
+ public class OnnxruntimeModule extends ReactContextBaseJavaModule {
+   private static ReactApplicationContext reactContext;
++  private boolean installed;
+ 
+   public OnnxruntimeModule(ReactApplicationContext context) {
+     super(context);
+@@ -36,7 +38,10 @@
+   @Override
+   public void invalidate() {
+     super.invalidate();
+-    nativeCleanup();
++    if (installed) {
++      nativeCleanup();
++      installed = false;
++    }
+   }
+ 
+   /**
+@@ -48,10 +53,16 @@
+       System.loadLibrary("onnxruntimejsi");
+       JavaScriptContextHolder jsContext = getReactApplicationContext().getJavaScriptContextHolder();
+       CallInvokerHolderImpl jsCallInvokerHolder =
+-        (CallInvokerHolderImpl) getReactApplicationContext().getCatalystInstance().getJSCallInvokerHolder();
++        (CallInvokerHolderImpl) getReactApplicationContext().getJSCallInvokerHolder();
++      if (jsContext == null || jsContext.get() == 0 || jsCallInvokerHolder == null) {
++        Log.e("Onnxruntime", "Cannot install ONNX Runtime before the JavaScript runtime is ready.");
++        return false;
++      }
+       nativeInstall(jsContext.get(), jsCallInvokerHolder);
++      installed = true;
+       return true;
+-    } catch (Exception e) {
++    } catch (Exception | LinkageError e) {
++      Log.e("Onnxruntime", "Failed to install ONNX Runtime JSI bindings.", e);
+       return false;
+     }
+   }

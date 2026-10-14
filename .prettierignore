@@ -1,0 +1,7 @@
+node_modules
+.expo
+dist
+test-results
+test-report
+package-lock.json
+artifacts

@@ -1,0 +1,21 @@
+{
+  "started_at_utc": "2026-10-13T08:38:07.214515+00:00",
+  "split": "test",
+  "segmentation_checkpoint_sha256": "11eee90cc6f4f82975601cb87dc41525833dc0c4067136bbb852baaebcafca37",
+  "classifier_checkpoint_sha256": "25437646d668db520ea5bc437b3c074728aecbb3691fcad8b95edab4b0c4e139",
+  "evaluation_script_sha256": "20dad601100609430affc6fdb9ba94dfea5bddb63fe255a1e41e2afcf41b55cf",
+  "export_manifest_sha256": "ae4bb65cb7a5cde4932a81732606a995f9689418114e996e0f4f2d02132c2ee5",
+  "export_model_id": "clara-local-research-refined-v2",
+  "exported_onnx_sha256": {
+    "segmentation": "899c1bb184871d579a41654c6256cfc6d36ee9f59fba52bd99df435765eb6d01",
+    "classifier": "4da26caf37fb8b341acbf4f7be9e844b5bd28a819f75e87863ec93d28c99cb07"
+  },
+  "segmentation_threshold": 0.5,
+  "classifier_review_band": [
+    0.2,
+    0.8
+  ],
+  "selection": "Refined-v2 selected and promoted using train/validation data before this evaluation. No test-based tuning or training is permitted.",
+  "prior_exposure": "Original baseline had previously been tested. One CL test image was used solely for UI smoke tests. This is an internal evaluation, not a pristine external holdout.",
+  "evaluation_scope": "Internal image-level test only. Patient identities and split separation are unverified; acquisition source is confounded with disease class. Not independent patient-level, external, or clinical validation."
+}

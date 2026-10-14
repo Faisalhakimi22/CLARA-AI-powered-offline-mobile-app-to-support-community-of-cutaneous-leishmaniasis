@@ -1,0 +1,7 @@
+# Torch / TorchVision versions paired by the official PyTorch release matrix.
+torch==2.13.0
+torchvision==0.28.0
+Pillow>=11.0
+numpy>=2.0
+scikit-learn>=1.6
+PyYAML>=6.0
